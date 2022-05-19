@@ -1,6 +1,7 @@
 #include "Level1Parser.h"
 #include <iostream>
 
+bool IsNewLineSymbol(char s);
 bool IsBlankSymbol(char s);
 bool IsBraceSymbol(char s);
 bool IsOpeningBrace(char s);
@@ -9,10 +10,10 @@ bool IsNameTrackingStopSymbol(char s);
 
 namespace Level1Parser {
 
-list<Level1Token> Parse(const string &s_expr) {
-    // TODO It's probably bad to keep this on stack, but for now let's keep it
+list<Level1Token> Parse(const string &s_expr) { // TODO is it ok to return list like this?
     list<Level1Token> result;
     int identifier_starting_pos = -1;
+    int brace_cntr = 0;
 
     for (int i = 0; i < s_expr.length(); i++) {
         char symb = s_expr.at(i);
@@ -29,8 +30,21 @@ list<Level1Token> Parse(const string &s_expr) {
         }
         if (IsBraceSymbol(symb)) {
             result.push_back(Level1Token(symb));
+            if (IsOpeningBrace(symb)) brace_cntr++;
+            if (IsClosingBrace(symb)) brace_cntr--;
+            if (brace_cntr < 0) {
+                throw WrongAmountOfBraces( "String \"" + s_expr + "\"\n" +
+                        "Excess of closing braces, possible position: " + to_string(i));
+            }
             continue;
         }
+    }
+
+    if (brace_cntr > 0) {
+        throw WrongAmountOfBraces("Excess of opening braces");
+    }
+    if (brace_cntr < 0) {
+        throw WrongAmountOfBraces("Excess of closing braces");
     }
 
     // Suppose we want to parse just "foo", then we will exit previous cycle
@@ -56,8 +70,12 @@ void Print(list<Level1Token> tokens) {
 
 } // namespace Level1Parser
 
+bool IsNewLineSymbol(char s) {
+    return s == '\n';
+}
+
 bool IsBlankSymbol(char s) {
-    return s == ' '; //TODO more blank symbols
+    return s == ' ' || s == '\t' || IsNewLineSymbol(s);
 }
 
 bool IsBraceSymbol(char s) {
