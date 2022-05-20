@@ -5,7 +5,7 @@
 
 using namespace std;
 
-enum Level1TokenType {
+enum class Level1TokenType {
     kOpeningBrace = 0,
     kClosingBrace,
     kIdentifier
@@ -21,9 +21,9 @@ private:
     };
 
     void FigureOutType() {
-        if (content.compare("(") == 0) token_type = kOpeningBrace;
-        else if (content.compare(")") == 0) token_type = kClosingBrace;
-        else token_type = kIdentifier;
+        if (content.compare("(") == 0) token_type = Level1TokenType::kOpeningBrace;
+        else if (content.compare(")") == 0) token_type = Level1TokenType::kClosingBrace;
+        else token_type = Level1TokenType::kIdentifier;
     }
 
 public:

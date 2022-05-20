@@ -1,14 +1,12 @@
 #include "Level1Parser.h"
+#include "../Helper.h"
 #include <iostream>
 
-bool IsNewLineSymbol(char s);
-bool IsBlankSymbol(char s);
-bool IsBraceSymbol(char s);
-bool IsOpeningBrace(char s);
-bool IsClosingBrace(char s);
-bool IsNameTrackingStopSymbol(char s);
+using namespace Helper;
 
 namespace Level1Parser {
+
+bool IsNameTrackingStopSymbol(char s);
 
 list<Level1Token> Parse(const string &s_expr) { // TODO is it ok to return list like this?
     list<Level1Token> result;
@@ -32,19 +30,8 @@ list<Level1Token> Parse(const string &s_expr) { // TODO is it ok to return list 
             result.push_back(Level1Token(symb));
             if (IsOpeningBrace(symb)) brace_cntr++;
             if (IsClosingBrace(symb)) brace_cntr--;
-            if (brace_cntr < 0) {
-                throw WrongAmountOfBraces( "String \"" + s_expr + "\"\n" +
-                        "Excess of closing braces, possible position: " + to_string(i));
-            }
             continue;
         }
-    }
-
-    if (brace_cntr > 0) {
-        throw WrongAmountOfBraces("Excess of opening braces");
-    }
-    if (brace_cntr < 0) {
-        throw WrongAmountOfBraces("Excess of closing braces");
     }
 
     // Suppose we want to parse just "foo", then we will exit previous cycle
@@ -64,32 +51,12 @@ void Print(list<Level1Token> tokens) {
     cout << "..." << endl;
     int i = 0;
     for (it = tokens.begin(); it != tokens.end(); ++it, i++) {
-        cout << "Token " << i << ": \"" << it->get_content() << "\"" << endl;
+        cout << "Level 1 token " << i << ": \"" << it->get_content() << "\"" << endl;
     }
-}
-
-} // namespace Level1Parser
-
-bool IsNewLineSymbol(char s) {
-    return s == '\n';
-}
-
-bool IsBlankSymbol(char s) {
-    return s == ' ' || s == '\t' || IsNewLineSymbol(s);
-}
-
-bool IsBraceSymbol(char s) {
-    return IsOpeningBrace(s) || IsClosingBrace(s);
-}
-
-bool IsOpeningBrace(char s) {
-    return s == '(';
-}
-
-bool IsClosingBrace(char s) {
-    return s == ')';
 }
 
 bool IsNameTrackingStopSymbol(char s) {
     return IsBlankSymbol(s) || IsBraceSymbol(s);
 }
+
+} // namespace Level1Parser
