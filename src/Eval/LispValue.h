@@ -18,7 +18,7 @@ enum class LispValueType {
     kIdentifier,
     kBuiltIn, // TODO is ts built in function or any built in? because #t and #f are also built in
     kLazy, // TODO is it more like Lisp List?
-    kError
+    kMsgToTheWorld
 };
 
 class LispValue {
@@ -31,6 +31,11 @@ public:
     virtual list<Level2Token*> get_list() {return list<Level2Token*>();}// TODO DUMMY!
     virtual ReservedProc get_proc() {return nullptr; }
     virtual string to_string() = 0;
+
+    // TODO all this virtual methods that return dummy values are even worse than just bad,
+    // they are very confusing, I always think that type dispatch -> dynamic cast ->
+    // -> call proper function would be much better.
+    // So how can I get rid of dispatching and virtual dummy methods?
 };
 
 enum class NumberType {
@@ -188,13 +193,13 @@ public:
     // maybe token setters will be useful in lambdas?
 };
 
-class ErrorVal : public LispValue {
+class MsgToTheWorld : public LispValue {
 private:
     string msg;
 public:
-    ErrorVal(string msg) {
+    MsgToTheWorld(string msg) {
         this->msg = msg;
-        this->type = LispValueType::kError;
+        this->type = LispValueType::kMsgToTheWorld;
     }
     string to_string() override {
         return msg;

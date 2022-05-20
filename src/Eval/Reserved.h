@@ -4,7 +4,6 @@
 #include "LispValue.h"
 #include <map>
 
-LispValue* procPlus(LispValue* args, LispValue* (*eval) (list<Level2Token*>));
 
 extern map<string, ReservedProc> ProcedureMap;
 

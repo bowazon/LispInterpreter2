@@ -3,6 +3,7 @@
 #include "../Level2Parser/Level2Parser.h"
 #include "../Helper.h"
 #include "Reserved.h"
+#include "Defined.h"
 #include <iostream>
 
 //using namespace std;
@@ -40,6 +41,7 @@ LispValue* eval(list<Level2Token*> to_eval) {
             if (Helper::IsNumber(s)) return new NumberVal(s); // TODO if they all gonna be (s),
             if (Helper::IsBoolean(s)) return new BooleanVal(s); // maybe I need a factory??
             if (IsBuiltInFunction(s)) return new BuiltIn(ProcedureMap.find(s)->second);
+            if (DefinedStore.Contains(s)) return eval(DefinedStore.FindDefinition(s)->get_list());
             //if ()
         } else {
             // TODO if we eval("(+ 2 3 (+ 4 7))") then lazy "(+ 4 7)" traps here
@@ -52,7 +54,7 @@ LispValue* eval(list<Level2Token*> to_eval) {
         //return apply(eval(to_eval.front()), to_eval); // TODO level2 Tokens or LispValues???
     }
 
-    return new ErrorVal("Some eval() error");
+    return new MsgToTheWorld("Some eval() error");
 }
 
 LispValue* apply(LispValue* operat, LispValue* operands) {
@@ -60,7 +62,7 @@ LispValue* apply(LispValue* operat, LispValue* operands) {
         return dynamic_cast<BuiltIn*>(operat)->get_proc()(operands, eval);
     }
 
-    return new ErrorVal("Some apply() error");
+    return new MsgToTheWorld("Some apply() error");
 }
 
 list<Level2Token*> rest(list<Level2Token*> my_list) { // TODO how da fuck get sublist from second to end???
